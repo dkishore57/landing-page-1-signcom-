@@ -31,5 +31,5 @@ jobs:
       run: |
           echo "$SSH_PRIVATE_KEY" | ssh -i /dev/stdin -o StrictHostKeyChecking=no $USER@$HOST '
            docker pull  balasrinivascs/my-apache-static:${{ env.IMAGE_TAG }}
-           docker run -d -p 8000:8000 balasrinivascs/my-apache-static:${{ env.IMAGE_TAG }}
+           docker run -d -p 8000:8000 balasrinivascs/my-apache-static:${{ env.IMAGE_TAG }}'
            
