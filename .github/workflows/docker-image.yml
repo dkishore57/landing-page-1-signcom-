@@ -25,23 +25,25 @@ jobs:
 
     - name: SSH and Deploy to EC2
       env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          HOST: ${{ secrets.EC2_HOST }}
-          USER: ${{ secrets.EC2_USER }}
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+        HOST: ${{ secrets.EC2_HOST }}
+        USER: ${{ secrets.EC2_USER }}
       run: |
         echo "$SSH_PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
         ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST "
+          # Pull the latest image
           docker pull kishoredk/test:${{ env.IMAGE_TAG }}
-
-          # Stop and remove existing container if running
-          CONTAINER_ID=\$(docker ps -q --filter ancestor=kishoredk/test)
+    
+          # Stop and remove container using port 8000
+          CONTAINER_ID=\$(docker ps --filter 'publish=8000' --format '{{.ID}}')
           if [ ! -z \"\$CONTAINER_ID\" ]; then
-            echo 'Stopping and removing old container...'
+            echo 'Stopping container using port 8000...'
             docker stop \$CONTAINER_ID && docker rm \$CONTAINER_ID
           fi
-
+    
           # Run new container
           docker run -d -p 8000:8000 kishoredk/test:${{ env.IMAGE_TAG }}
         "
+
 
         
